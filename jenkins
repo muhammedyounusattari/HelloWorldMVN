@@ -1,0 +1,65 @@
+pipeline {
+   agent any
+
+    tools{
+        maven "Maven 3.6.3"
+    }
+  
+
+   stages {
+      stage('clone') {
+         steps {
+            // Get some code from a GitHub repository
+           git 'https://github.com/muhammedyounusattari/HelloWorldMVN.git'
+
+            // Run Maven on a Unix agent.
+            sh "mvn clean package"
+
+            // To run Maven on a Windows agent, use
+            // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+         }
+
+         post {
+            // If Maven was able to run the tests, even if some of the test
+            // failed, record the test results and archive the jar file.
+            success {
+              echo 'successfully cloned project....'
+            }
+         }
+      }
+      
+       stage('build') {
+         steps {
+           
+            // Run Maven on a Unix agent.
+            sh "mvn clean package"
+         }
+
+         post {
+            // If Maven was able to run the tests, even if some of the test
+            // failed, record the test results and archive the jar file.
+            success {
+               echo 'compressed in a package'
+            }
+         }
+      }
+      
+       stage('run') {
+         steps {
+         
+            sh "mvn exec:java -Dexec.mainClass='HelloWorld' "
+
+            // To run Maven on a Windows agent, use
+            // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+         }
+
+         post {
+            // If Maven was able to run the tests, even if some of the test
+            // failed, record the test results and archive the jar file.
+            success {
+              echo 'successfully executed main class'
+            }
+         }
+      }
+      
+   }
